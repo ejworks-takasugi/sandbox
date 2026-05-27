@@ -1,13 +1,15 @@
 name: Fetch microCMS Data and Save JSON
 
 on:
-  # microCMSからのWebhook（外部からのトリガー）を受け取る設定
   repository_dispatch:
     types: [update]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # 📝 Node.js 20の警告を消すための設定
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout repository
@@ -25,7 +27,5 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
-        # 変更があった場合のみコミットしてプッシュする
         git add ./data/news.json
         git diff --cached --quiet || (git commit -m "chore: Update microCMS data [skip ci]" && git push)
-      
