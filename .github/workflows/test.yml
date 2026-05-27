@@ -15,8 +15,7 @@ jobs:
 
     - name: Fetch API data and Save to JSON
       run: |
-        # 例として「news」というエンドポイントからデータを取得する場合
-        # X-MICROCMS-API-KEY にはご自身のmicroCMSのAPIキー（読込専用でOK）を直接入れるか、GitHub Secretに登録して使用してください。
+        mkdir -p ./data
         curl -H "X-MICROCMS-API-KEY: ${{ secrets.MICROCMS_API_KEY }}" \
              "https://mlr9c0xm6s.microcms.io/api/v1/news?limit=100" \
              -o ./data/news.json
