@@ -1,0 +1,32 @@
+name: Fetch microCMS Data and Save JSON
+
+on:
+  # microCMSからのWebhook（外部からのトリガー）を受け取る設定
+  repository_dispatch:
+    types: [update]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Fetch API data and Save to JSON
+      run: |
+        # 例として「news」というエンドポイントからデータを取得する場合
+        # X-MICROCMS-API-KEY にはご自身のmicroCMSのAPIキー（読込専用でOK）を直接入れるか、GitHub Secretに登録して使用してください。
+        curl -H "X-MICROCMS-API-KEY: ${{ secrets.MICROCMS_API_KEY }}" \
+             "https://mlr9c0xm6s.microcms.io/api/v1/news?limit=100" \
+             -o ./data/news.json
+
+    - name: Commit and Push if changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # 変更があった場合のみコミットしてプッシュする
+        git add ./data/news.json
+        git diff --cached --quiet || (git commit -m "chore: Update microCMS data [skip ci]" && git push)
+      
