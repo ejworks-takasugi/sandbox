@@ -1,0 +1,32 @@
+name: Fetch kuroco Data and Save JSON
+
+on:
+  repository_dispatch:
+    types: [update]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # 📝 Node.js 20の警告を消すための設定
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Fetch API data and Save to JSON
+      run: |
+        mkdir -p ./data
+        curl 'https://ejworks-yuki.g.kuroco.app/rcms-api/1/content/list' \
+             -H 'accept: application/json' \
+             -H 'X-RCMS-API-ACCESS-TOKEN: ${{ secrets.KUROCO_API_KEY }}' \
+             -o ./data/news.json
+
+    - name: Commit and Push if changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        git add ./data/news.json
+        git diff --cached --quiet || (git commit -m "chore: Update microCMS data [skip ci]" && git push)
