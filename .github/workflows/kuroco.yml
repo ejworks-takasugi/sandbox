@@ -1,8 +1,7 @@
 name: Fetch kuroco Data and Save JSON
 
 on:
-  repository_dispatch:
-    types: [update]
+  workflow_dispatch:
 
 jobs:
   build:
